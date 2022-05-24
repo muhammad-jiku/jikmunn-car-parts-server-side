@@ -1,7 +1,7 @@
 require('dotenv').config();
 const express = require('express');
 const cors = require('cors');
-const { MongoClient, ServerApiVersion } = require('mongodb');
+const { MongoClient, ServerApiVersion, ObjectId } = require('mongodb');
 
 const port = process.env.PORT || 5000;
 const app = express();
@@ -24,7 +24,7 @@ const client = new MongoClient(uri, {
 const run = async () => {
   try {
     await client.connect();
-    const carPartsCollection = client.db('carParts').collection('parts');
+    const carPartsCollection = client.db('carParts').collection('carPart');
 
     // displaying all the car parts
     app.get('/car-parts', async (req, res) => {
@@ -33,6 +33,15 @@ const run = async () => {
       const carParts = await cursor.toArray();
       res.send(carParts);
     });
+
+    // displaying single car part for purchase
+    app.get('/car-parts/:carItemId', async (req, res) => {
+      const id = req.params.carItemId;
+      const query = { _id: ObjectId(id) };
+      const carItem = await carPartsCollection.findOne(query);
+      // const  = cursor;
+      res.send(carItem);
+    });
   } finally {
     // await client.close();
   }
@@ -40,5 +49,5 @@ const run = async () => {
 run().catch(console.dir);
 
 app.listen(port, () => {
-  console.log(`Server running at http://localhost:${port}`);
+  console.log(`server running at http://localhost:${port}`);
 });

@@ -67,14 +67,14 @@ const run = async () => {
       res.send(carItem);
     });
 
-    // app.get('/available-car-parts/:carItemId', async (req, res) => {
-    //   const id = req.params.carItemId;
-    //   console.log(id);
-    //   const carItems = await carPartsCollection.find().toArray();
-    //   const query = { orderId: id };
-    //   const availableCarItems = await ordersCollection.find(query).toArray();
-    //   res.send(availableCarItems);
-    // });
+    // displaying orders by email
+    app.get('/orders', async (req, res) => {
+      const user = req.query.user;
+      const query = { user: user };
+      const cursor = ordersCollection.find(query);
+      const ordersResult = await cursor.toArray();
+      res.send(ordersResult);
+    });
 
     // ordering car parts item
     app.post('/order', async (req, res) => {
@@ -109,7 +109,7 @@ const run = async () => {
       res.send({ usersResult, accessToken: token });
     });
 
-    // updating available quantity
+    // updating available quantity for car item
     app.put('/car-parts/:carItemId', async (req, res) => {
       const id = req.params.carItemId;
       const availableQuantity = req.body;

@@ -61,10 +61,20 @@ const run = async () => {
     // displaying single car part for purchase
     app.get('/car-parts/:carItemId', async (req, res) => {
       const id = req.params.carItemId;
+      console.log(id);
       const query = { _id: ObjectId(id) };
       const carItem = await carPartsCollection.findOne(query);
       res.send(carItem);
     });
+
+    // app.get('/available-car-parts/:carItemId', async (req, res) => {
+    //   const id = req.params.carItemId;
+    //   console.log(id);
+    //   const carItems = await carPartsCollection.find().toArray();
+    //   const query = { orderId: id };
+    //   const availableCarItems = await ordersCollection.find(query).toArray();
+    //   res.send(availableCarItems);
+    // });
 
     // ordering car parts item
     app.post('/order', async (req, res) => {
@@ -97,6 +107,26 @@ const run = async () => {
         }
       );
       res.send({ usersResult, accessToken: token });
+    });
+
+    // updating available quantity
+    app.put('/car-parts/:carItemId', async (req, res) => {
+      const id = req.params.carItemId;
+      const availableQuantity = req.body;
+      const filter = { _id: ObjectId(id) };
+      const options = { upsert: true };
+      const updateAvailableQuantity = {
+        $set: {
+          avaialableQuantity: availableQuantity.avaialableQuantity,
+        },
+      };
+      const availableQuantityResult = await carPartsCollection.updateOne(
+        filter,
+        updateAvailableQuantity,
+        options
+      );
+
+      res.send(availableQuantityResult);
     });
   } finally {
     // await client.close();

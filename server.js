@@ -47,6 +47,7 @@ const run = async () => {
   try {
     await client.connect();
     const carPartsCollection = client.db('carParts').collection('carPart');
+    const ordersCollection = client.db('carParts').collection('orders');
     const usersCollection = client.db('users').collection('user');
 
     // displaying all the car parts
@@ -58,11 +59,18 @@ const run = async () => {
     });
 
     // displaying single car part for purchase
-    app.get('/car-parts/:carItemId', verifyJWT, async (req, res) => {
+    app.get('/car-parts/:carItemId', async (req, res) => {
       const id = req.params.carItemId;
       const query = { _id: ObjectId(id) };
       const carItem = await carPartsCollection.findOne(query);
       res.send(carItem);
+    });
+
+    // ordering car parts item
+    app.post('/order', async (req, res) => {
+      const order = req.body;
+      const result = await ordersCollection.insertOne(order);
+      res.send(result);
     });
 
     // issuing JWT during signin or signup or social login

@@ -51,6 +51,21 @@ const run = async () => {
     const ordersCollection = client.db('carParts').collection('orders');
     const usersCollection = client.db('users').collection('user');
 
+    // verifying admin
+    const verifyAdmin = async (req, res, next) => {
+      const requestedEmail = req.decoded.email;
+      const requestedAccount = await usersCollection.findOne({
+        email: requestedEmail,
+      });
+      if (requestedAccount?.role === 'admin') {
+        next();
+      } else {
+        res.status(403).send({
+          message: 'Request to the this route is not accessible and deniable',
+        });
+      }
+    };
+
     // displaying all the car parts
     app.get('/car-parts', async (req, res) => {
       const query = {};
@@ -104,6 +119,15 @@ const run = async () => {
       const user = await usersCollection.findOne(query);
       const isAdmin = user?.role === 'admin';
       res.send({ admin: isAdmin });
+    });
+
+    // adding new car part accessory to database
+    app.post('/car-part', verifyJWT, async (req, res) => {
+      const carPartAccessory = req.body;
+      const carPartAccessoryResult = await carPartsCollection.insertOne(
+        carPartAccessory
+      );
+      res.send(carPartAccessoryResult);
     });
 
     // ordering car parts item
@@ -161,26 +185,14 @@ const run = async () => {
 
     // creating adminRole for from users to admins
     // using verifyJWT as middleware
-    app.put('/user/admin/:email', verifyJWT, async (req, res) => {
+    app.put('/user/admin/:email', verifyJWT, verifyAdmin, async (req, res) => {
       const email = req.params.email;
-      const requestedEmail = req.decoded.email;
-      const requestedAccount = await usersCollection.findOne({
-        email: requestedEmail,
-      });
-      if (requestedAccount?.role === 'admin') {
-        const filter = { email: email };
-        const makeAdmin = {
-          $set: { role: 'admin' },
-        };
-
-        const adminsResult = await usersCollection.updateOne(filter, makeAdmin);
-
-        res.send(adminsResult);
-      } else {
-        res
-          .status(403)
-          .send({ message: 'Access to the this route is forbidden' });
-      }
+      const filter = { email: email };
+      const makeAdmin = {
+        $set: { role: 'admin' },
+      };
+      const adminResult = await usersCollection.updateOne(filter, makeAdmin);
+      res.send(adminResult);
     });
   } finally {
     // await client.close();

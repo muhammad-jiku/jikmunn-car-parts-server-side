@@ -67,8 +67,15 @@ const run = async () => {
       res.send(carItem);
     });
 
-    // displaying orders by email
+    // displaying all orders
     app.get('/orders', async (req, res) => {
+      const query = {};
+      const orders = await ordersCollection.find(query).toArray();
+      res.send(orders);
+    });
+
+    // displaying orders by email
+    app.get('/order', async (req, res) => {
       const user = req.query.user;
       const query = { user: user };
       const cursor = ordersCollection.find(query);

@@ -50,6 +50,7 @@ const run = async () => {
     const carPartsCollection = client.db('carParts').collection('carPart');
     const ordersCollection = client.db('carParts').collection('orders');
     const usersCollection = client.db('users').collection('user');
+    const reviewsCollection = client.db('users').collection('reviews');
 
     // verifying admin
     const verifyAdmin = async (req, res, next) => {
@@ -81,6 +82,13 @@ const run = async () => {
       const query = { _id: ObjectId(id) };
       const carItem = await carPartsCollection.findOne(query);
       res.send(carItem);
+    });
+
+    // displaying all reviews
+    app.get('/reviews', async (req, res) => {
+      const query = {};
+      const reviews = await reviewsCollection.find(query).toArray();
+      res.send(reviews);
     });
 
     // displaying all orders
@@ -134,6 +142,13 @@ const run = async () => {
     app.post('/order', async (req, res) => {
       const order = req.body;
       const result = await ordersCollection.insertOne(order);
+      res.send(result);
+    });
+
+    // ordering car parts item
+    app.post('/reviews', async (req, res) => {
+      const review = req.body;
+      const result = await reviewsCollection.insertOne(review);
       res.send(result);
     });
 

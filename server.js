@@ -78,11 +78,16 @@ const run = async () => {
     // displaying orders by email
     // using verifyJWT as middleware
     app.get('/order', verifyJWT, async (req, res) => {
+      const decodedEmail = req.decoded.email;
       const user = req.query.user;
-      const query = { user: user };
-      const cursor = ordersCollection.find(query);
-      const ordersResult = await cursor.toArray();
-      res.send(ordersResult);
+      if (user === decodedEmail) {
+        const query = { user: user };
+        const cursor = ordersCollection.find(query);
+        const ordersResult = await cursor.toArray();
+        res.send(ordersResult);
+      } else {
+        res.status(403).send({ message: 'Access to this route is forbidden' });
+      }
     });
 
     // displaying users
@@ -99,9 +104,29 @@ const run = async () => {
       res.send(result);
     });
 
+    // updating available quantity for car item
+    app.put('/car-parts/:carItemId', async (req, res) => {
+      const id = req.params.carItemId;
+      const availableQuantity = req.body;
+      const filter = { _id: ObjectId(id) };
+      const options = { upsert: true };
+      const updateAvailableQuantity = {
+        $set: {
+          avaialableQuantity: availableQuantity.avaialableQuantity,
+        },
+      };
+      const availableQuantityResult = await carPartsCollection.updateOne(
+        filter,
+        updateAvailableQuantity,
+        options
+      );
+
+      res.send(availableQuantityResult);
+    });
+
     // issuing JWT during signin or signup or social login
     // inserting user to database if user does not exist
-    // updating uset email if does exist
+    // updating user email if does exist
     app.put('/user/:email', async (req, res) => {
       const email = req.params.email;
       const user = req.body;
@@ -125,24 +150,28 @@ const run = async () => {
       res.send({ usersResult, accessToken: token });
     });
 
-    // updating available quantity for car item
-    app.put('/car-parts/:carItemId', async (req, res) => {
-      const id = req.params.carItemId;
-      const availableQuantity = req.body;
-      const filter = { _id: ObjectId(id) };
-      const options = { upsert: true };
-      const updateAvailableQuantity = {
-        $set: {
-          avaialableQuantity: availableQuantity.avaialableQuantity,
-        },
+    // creating adminRole for from users to admins
+    // using verifyJWT as middleware
+    app.put('/user/admin/:email', async (req, res) => {
+      const email = req.params.email;
+      // const requestedEmail = req.decoded.email;
+      // const requestedAccount = await usersCollection.findOne({
+      //   email: requestedEmail,
+      // });
+      // if (requestedAccount?.role === 'admin') {
+      const filter = { email: email };
+      const makeAdmin = {
+        $set: { role: 'admin' },
       };
-      const availableQuantityResult = await carPartsCollection.updateOne(
-        filter,
-        updateAvailableQuantity,
-        options
-      );
 
-      res.send(availableQuantityResult);
+      const adminsResult = await usersCollection.updateOne(filter, makeAdmin);
+
+      res.send(adminsResult);
+      // } else {
+      //   res
+      //     .status(403)
+      //     .send({ message: 'Access to the this route is forbidden' });
+      // }
     });
   } finally {
     // await client.close();

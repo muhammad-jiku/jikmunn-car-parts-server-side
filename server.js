@@ -83,6 +83,13 @@ const run = async () => {
       res.send(ordersResult);
     });
 
+    // displaying users
+    app.get('/users', async (req, res) => {
+      const query = {};
+      const users = await usersCollection.find(query).toArray();
+      res.send(users);
+    });
+
     // ordering car parts item
     app.post('/order', async (req, res) => {
       const order = req.body;

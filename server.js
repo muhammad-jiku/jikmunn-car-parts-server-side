@@ -25,15 +25,16 @@ const verifyJWT = (req, res, next) => {
   }
   const token = authHeader.split(' ')[1];
   jwt.verify(token, process.env.ACCESS_TOKEN_SECRET, (err, decoded) => {
-    if (err)
+    if (err) {
       return res
         .status(403)
         .send({ message: 'Access to this route is forbidden' });
+    }
+    req.decoded = decoded;
+    console.log('decoded ', decoded);
+    console.log('Auth header ', authHeader);
+    next();
   });
-  req.decoded = decoded;
-  console.log('decoded ', decoded);
-  console.log('Auth header ', authHeader);
-  next();
 };
 
 const uri = `mongodb+srv://${process.env.DB_AUTHOR}:${process.env.DB_PASSWORD}@cluster0.cvx4k.mongodb.net/?retryWrites=true&w=majority`;
@@ -75,7 +76,8 @@ const run = async () => {
     });
 
     // displaying orders by email
-    app.get('/order', async (req, res) => {
+    // using verifyJWT as middleware
+    app.get('/order', verifyJWT, async (req, res) => {
       const user = req.query.user;
       const query = { user: user };
       const cursor = ordersCollection.find(query);

@@ -97,6 +97,15 @@ const run = async () => {
       res.send(users);
     });
 
+    // confirming admins account and displaying users for admin
+    app.get('/admin/:email', async (req, res) => {
+      const email = req.params.email;
+      const query = { email: email };
+      const user = await usersCollection.findOne(query);
+      const isAdmin = user?.role === 'admin';
+      res.send({ admin: isAdmin });
+    });
+
     // ordering car parts item
     app.post('/order', async (req, res) => {
       const order = req.body;
@@ -152,26 +161,26 @@ const run = async () => {
 
     // creating adminRole for from users to admins
     // using verifyJWT as middleware
-    app.put('/user/admin/:email', async (req, res) => {
+    app.put('/user/admin/:email', verifyJWT, async (req, res) => {
       const email = req.params.email;
-      // const requestedEmail = req.decoded.email;
-      // const requestedAccount = await usersCollection.findOne({
-      //   email: requestedEmail,
-      // });
-      // if (requestedAccount?.role === 'admin') {
-      const filter = { email: email };
-      const makeAdmin = {
-        $set: { role: 'admin' },
-      };
+      const requestedEmail = req.decoded.email;
+      const requestedAccount = await usersCollection.findOne({
+        email: requestedEmail,
+      });
+      if (requestedAccount?.role === 'admin') {
+        const filter = { email: email };
+        const makeAdmin = {
+          $set: { role: 'admin' },
+        };
 
-      const adminsResult = await usersCollection.updateOne(filter, makeAdmin);
+        const adminsResult = await usersCollection.updateOne(filter, makeAdmin);
 
-      res.send(adminsResult);
-      // } else {
-      //   res
-      //     .status(403)
-      //     .send({ message: 'Access to the this route is forbidden' });
-      // }
+        res.send(adminsResult);
+      } else {
+        res
+          .status(403)
+          .send({ message: 'Access to the this route is forbidden' });
+      }
     });
   } finally {
     // await client.close();

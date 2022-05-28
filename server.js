@@ -210,11 +210,19 @@ const run = async () => {
       res.send(adminResult);
     });
 
-    // delete orders if user wants
+    // delete order by user
     app.delete('/order/:id', async (req, res) => {
       const id = req.params.id;
       const filter = { _id: ObjectId(id) };
       const result = await ordersCollection.deleteOne(filter);
+      res.send(result);
+    });
+
+    // delete car part accessory by admin
+    app.delete('/car-parts/:carItemId', async (req, res) => {
+      const id = req.params.carItemId;
+      const filter = { _id: ObjectId(id) };
+      const result = await carPartsCollection.deleteOne(filter);
       res.send(result);
     });
   } finally {

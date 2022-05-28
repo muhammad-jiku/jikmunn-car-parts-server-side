@@ -209,6 +209,14 @@ const run = async () => {
       const adminResult = await usersCollection.updateOne(filter, makeAdmin);
       res.send(adminResult);
     });
+
+    // delete orders if user wants
+    app.delete('/order/:id', async (req, res) => {
+      const id = req.params.id;
+      const filter = { _id: ObjectId(id) };
+      const result = await ordersCollection.deleteOne(filter);
+      res.send(result);
+    });
   } finally {
     // await client.close();
   }

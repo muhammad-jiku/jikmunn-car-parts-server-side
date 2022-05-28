@@ -113,6 +113,15 @@ const run = async () => {
       }
     });
 
+    // displaying order by id for purchase car item
+    app.get('/order/:id', verifyJWT, async (req, res) => {
+      const id = req.params.id;
+      console.log(id);
+      const query = { _id: ObjectId(id) };
+      const order = await ordersCollection.findOne(query);
+      res.send(order);
+    });
+
     // displaying users
     app.get('/users', async (req, res) => {
       const query = {};

@@ -272,7 +272,6 @@ const run = async () => {
       const id = req.params.id;
       const payment = req.body;
       const filter = { _id: ObjectId(id) };
-      // const options = { upsert: true };
       const updateOrderPayment = {
         $set: {
           paid: true,
@@ -285,9 +284,24 @@ const run = async () => {
       const updatedOrderPayment = await ordersCollection.updateOne(
         filter,
         updateOrderPayment
-        // options
       );
       res.send(updateOrderPayment);
+    });
+
+    // update payment status
+    app.put('/order/:id', verifyJWT, verifyAdmin, async (req, res) => {
+      const id = req.params.id;
+      const filter = { _id: ObjectId(id) };
+      const options = { upsert: true };
+      const shipOrder = {
+        $set: { status: 'shipped' },
+      };
+      const shipOrderResult = await ordersCollection.updateOne(
+        filter,
+        shipOrder,
+        options
+      );
+      res.send(shipOrderResult);
     });
 
     // delete order by user

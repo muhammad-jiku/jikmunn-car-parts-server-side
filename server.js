@@ -52,6 +52,7 @@ const run = async () => {
     const ordersCollection = client.db('carParts').collection('orders');
     const usersCollection = client.db('users').collection('user');
     const reviewsCollection = client.db('users').collection('reviews');
+    const paymentsCollection = client.db('users').collection('payments');
 
     // verifying admin
     const verifyAdmin = async (req, res, next) => {
@@ -232,6 +233,28 @@ const run = async () => {
       };
       const adminResult = await usersCollection.updateOne(filter, makeAdmin);
       res.send(adminResult);
+    });
+
+    // update transaction of order
+    app.patch('/order/:id', verifyJWT, async (req, res) => {
+      const id = req.params.id;
+      const payment = req.body;
+      const filter = { _id: ObjectId(id) };
+      // const options = { upsert: true };
+      const updateOrderPayment = {
+        $set: {
+          paid: true,
+          transactionId: payment?.transactionId,
+        },
+      };
+
+      const resultPayments = await paymentsCollection.insertOne(payment);
+      const updatedOrderPayment = await ordersCollection.updateOne(
+        filter,
+        updateOrderPayment
+        // options
+      );
+      res.send(updateOrderPayment);
     });
 
     // delete order by user

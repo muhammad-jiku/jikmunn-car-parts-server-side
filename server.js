@@ -132,6 +132,14 @@ const run = async () => {
       res.send(users);
     });
 
+    // displaying user profile
+    app.get('/user/:email', async (req, res) => {
+      const email = req.params.email;
+      const query = { email: email };
+      const profile = await usersCollection.findOne(query);
+      res.send(profile);
+    });
+
     // confirming admins account and displaying users for admin
     app.get('/admin/:email', async (req, res) => {
       const email = req.params.email;

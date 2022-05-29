@@ -94,7 +94,7 @@ const run = async () => {
     });
 
     // displaying all orders
-    app.get('/orders', async (req, res) => {
+    app.get('/orders', verifyJWT, verifyAdmin, async (req, res) => {
       const query = {};
       const orders = await ordersCollection.find(query).toArray();
       res.send(orders);

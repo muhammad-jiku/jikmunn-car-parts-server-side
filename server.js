@@ -53,6 +53,7 @@ const run = async () => {
     const usersCollection = client.db('users').collection('user');
     const reviewsCollection = client.db('users').collection('reviews');
     const paymentsCollection = client.db('users').collection('payments');
+    const profileCollection = client.db('portfolio').collection('myProfile');
 
     // verifying admin
     const verifyAdmin = async (req, res, next) => {
@@ -138,6 +139,13 @@ const run = async () => {
       const user = await usersCollection.findOne(query);
       const isAdmin = user?.role === 'admin';
       res.send({ admin: isAdmin });
+    });
+
+    // displaying portfolio
+    app.get('/portfolio', async (req, res) => {
+      const query = {};
+      const portfolio = await profileCollection.find(query).toArray();
+      res.send(portfolio);
     });
 
     // adding new car part accessory to database

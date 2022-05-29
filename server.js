@@ -244,6 +244,7 @@ const run = async () => {
       const updateOrderPayment = {
         $set: {
           paid: true,
+          status: 'pending',
           transactionId: payment?.transactionId,
         },
       };

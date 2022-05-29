@@ -50,6 +50,7 @@ const run = async () => {
     await client.connect();
     const carPartsCollection = client.db('carParts').collection('carPart');
     const ordersCollection = client.db('carParts').collection('orders');
+    const partnersCollection = client.db('carParts').collection('partners');
     const usersCollection = client.db('users').collection('user');
     const reviewsCollection = client.db('users').collection('reviews');
     const paymentsCollection = client.db('users').collection('payments');
@@ -69,6 +70,13 @@ const run = async () => {
         });
       }
     };
+
+    // displaying connect partnets
+    app.get('/partners', async (req, res) => {
+      const query = {};
+      const partnerImages = await partnersCollection.find(query).toArray();
+      res.send(partnerImages);
+    });
 
     // displaying all the car parts
     app.get('/car-parts', async (req, res) => {

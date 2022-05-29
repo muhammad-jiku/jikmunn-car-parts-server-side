@@ -51,6 +51,7 @@ const run = async () => {
     const carPartsCollection = client.db('carParts').collection('carPart');
     const ordersCollection = client.db('carParts').collection('orders');
     const partnersCollection = client.db('carParts').collection('partners');
+    const servicesCollection = client.db('carParts').collection('services');
     const usersCollection = client.db('users').collection('user');
     const reviewsCollection = client.db('users').collection('reviews');
     const paymentsCollection = client.db('users').collection('payments');
@@ -76,6 +77,13 @@ const run = async () => {
       const query = {};
       const partnerImages = await partnersCollection.find(query).toArray();
       res.send(partnerImages);
+    });
+
+    // displaying services
+    app.get('/services', async (req, res) => {
+      const query = {};
+      const services = await servicesCollection.find(query).toArray();
+      res.send(services);
     });
 
     // displaying all the car parts

@@ -97,7 +97,7 @@ const run = async () => {
     // displaying single car part for purchase
     app.get('/car-parts/:carItemId', async (req, res) => {
       const id = req.params.carItemId;
-      console.log(id);
+      // console.log(id);
       const query = { _id: ObjectId(id) };
       const carItem = await carPartsCollection.findOne(query);
       res.send(carItem);
@@ -135,7 +135,7 @@ const run = async () => {
     // displaying order by id for purchase car item
     app.get('/order/:id', verifyJWT, async (req, res) => {
       const id = req.params.id;
-      console.log(id);
+      // console.log(id);
       const query = { _id: ObjectId(id) };
       const order = await ordersCollection.findOne(query);
       res.send(order);

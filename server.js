@@ -32,8 +32,8 @@ const verifyJWT = (req, res, next) => {
         .send({ message: 'Access to this route is forbidden' });
     }
     req.decoded = decoded;
-    // console.log('decoded ', decoded);
-    // console.log('Auth header ', authHeader);
+    console.log('decoded ', decoded);
+    console.log('Auth header ', authHeader);
     next();
   });
 };

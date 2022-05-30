@@ -10,10 +10,10 @@ const app = express();
 
 // middleware
 const corsConfig = {
-  origin: true,
+  origin: 'https://jikmunn-carmania.web.app',
   credentials: true,
 };
-app.use(cors(origin, 'https://jikmunn-carmania.web.app/'));
+// app.use(cors(origin, 'https://jikmunn-carmania.web.app/'));
 app.use(cors(corsConfig));
 app.options('*', cors(corsConfig));
 app.use(express.json());

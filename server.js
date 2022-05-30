@@ -294,7 +294,7 @@ const run = async () => {
     });
 
     // update payment status
-    app.put('/order/:id', verifyJWT, verifyAdmin, async (req, res) => {
+    app.put('/order/:id', verifyJWT, async (req, res) => {
       const id = req.params.id;
       const filter = { _id: ObjectId(id) };
       const options = { upsert: true };

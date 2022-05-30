@@ -9,12 +9,12 @@ const port = process.env.PORT || 5000;
 const app = express();
 
 // middleware
-// const corsConfig = {
-//   origin: true,
-//   credentials: true,
-// };
+const corsConfig = {
+  origin: true,
+  credentials: true,
+};
 app.use(cors(origin, 'https://jikmunn-carmania.web.app/'));
-// app.use(cors(corsConfig));
+app.use(cors(corsConfig));
 app.options('*', cors(corsConfig));
 app.use(express.json());
 
